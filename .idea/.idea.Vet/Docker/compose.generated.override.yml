@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.8"
+services:
+  vetapi:
+    build:
+      context: "/home/m3tasem/Programming/Vet"
+      dockerfile: "VetApi/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/VetApi.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "vetapi:dev"
+    ports: []
+    volumes:
+    - "/home/m3tasem/Programming/Vet/VetApi:/app:rw"
+    - "/home/m3tasem/Programming/Vet:/src:rw"
+    - "/home/m3tasem/.nuget/packages:/home/app/.nuget/packages"
+    working_dir: "/app"

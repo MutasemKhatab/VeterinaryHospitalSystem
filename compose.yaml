@@ -1,0 +1,34 @@
+﻿version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: vetdb
+      MYSQL_USER: vetuser
+      MYSQL_PASSWORD: vetpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  vetapi:
+    build:
+      context: .
+      dockerfile: VetApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=mariadb;Database=vetdb;User=vetuser;Password=vetpassword;
+      - Jwt__Key=your_secret_key_here_long_long_long_one
+      - Jwt__Issuer=http://localhost:8082
+      - Jwt__Audience=http://localhost:8080
+      - AuthService__Url=http://vetauth:8082/api/auth
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - mariadb
+
+volumes:
+  mariadb_data:
