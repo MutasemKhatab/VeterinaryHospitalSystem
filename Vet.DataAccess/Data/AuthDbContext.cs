@@ -8,4 +8,12 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options) : IdentityDb
 {
     public DbSet<VetOwner> VetOwners { get; set; }
 
+//TODO double tables 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<VetOwner>(entity => { entity.ToTable("VetOwners"); });
+        modelBuilder.Entity<Models.Vet>(entity => { entity.ToTable("Vets"); });
+    }
 }

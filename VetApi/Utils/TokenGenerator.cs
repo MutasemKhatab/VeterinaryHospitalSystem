@@ -23,8 +23,8 @@ namespace VetApi.Utils
             };
 
             var token = new JwtSecurityToken(
-                issuer: "http://localhost:8082",
-                audience: "http://localhost:8082",
+                issuer: jwtSettings.Value.Issuer,
+                audience: jwtSettings.Value.Audience,
                 claims: claims,
                 expires: DateTime.Now.AddHours(2),
                 signingCredentials: creds);

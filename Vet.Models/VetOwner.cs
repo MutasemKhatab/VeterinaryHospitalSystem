@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
 namespace Vet.Models {
@@ -11,6 +12,8 @@ namespace Vet.Models {
         public string? Address { get; set; }
         [Url]
         public string? ProfilePicUrl { get; set; }
-    
+
+        public List<Vet> Vets { get; set; } = [];
+
     }
 }

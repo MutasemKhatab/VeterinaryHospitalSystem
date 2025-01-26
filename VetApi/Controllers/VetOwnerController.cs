@@ -12,7 +12,7 @@ namespace VetApi.Controllers {
     [Authorize]
     public class VetOwnerController(AuthDbContext db) : ControllerBase
     {
-        [HttpGet]
+        [HttpGet]// create another one with vets 
         public async Task<ActionResult<IEnumerable<VetOwner>>> Get() {
             return await db.VetOwners.ToListAsync();
         }
@@ -26,36 +26,7 @@ namespace VetApi.Controllers {
             return vetOwner;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<VetOwner>> Post([FromBody] VetOwner vetOwner) {
-            db.VetOwners.Add(vetOwner);
-            await db.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = vetOwner.Id }, vetOwner);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody] VetOwner vetOwner) {
-            if (id != vetOwner.Id) {
-                return BadRequest();
-            }
-
-            db.Entry(vetOwner).State = EntityState.Modified;
-
-            try {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException) {
-                if (!VetOwnerExists(id)) {
-                    return NotFound();
-                }
-                else {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id) {
             var vetOwner = await db.VetOwners.FindAsync(id);
@@ -67,10 +38,6 @@ namespace VetApi.Controllers {
             await db.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool VetOwnerExists(string id) {
-            return db.VetOwners.Any(e => e.Id == id);
         }
     }
 }
