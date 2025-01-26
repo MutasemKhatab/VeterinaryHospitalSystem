@@ -314,7 +314,8 @@ namespace Vet.DataAccess.Migrations
                 {
                     b.HasOne("Vet.Models.VetOwner", "Owner")
                         .WithMany("Vets")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Owner");
                 });

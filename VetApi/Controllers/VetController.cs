@@ -17,7 +17,7 @@ namespace VetApi.Controllers
             string? id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await context.VetOwners.Include(
                 owner => owner.Vets
-                ).FirstOrDefaultAsync(vo => vo.Id == id);
+            ).FirstOrDefaultAsync(vo => vo.Id == id);
         }
 
         // GET: /Vet
@@ -53,7 +53,6 @@ namespace VetApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Vet.Models.Vet>> PostVet(Vet.Models.Vet vet)
         {
-            
             var user = await GetUser();
             if (user == null)
             {
@@ -66,7 +65,7 @@ namespace VetApi.Controllers
             return CreatedAtAction("GetVet", new { id = vet.Id }, vet);
         }
 
-        
+
         // PUT: /Vet/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutVet(int id, Vet.Models.Vet vet)
@@ -74,12 +73,7 @@ namespace VetApi.Controllers
             var user = await GetUser();
             if (user == null || id != vet.Id || vet.OwnerId != user.Id)
             {
-                return BadRequest(
-                new {
-                    vet.OwnerId,
-                    id,
-                    user
-                });
+                return BadRequest();
             }
 
             var existingVet = user.Vets.FirstOrDefault(v => v.Id == id);
@@ -115,7 +109,7 @@ namespace VetApi.Controllers
             return NoContent();
         }
 
-        
+
         // DELETE: /Vet/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVet(int id)
@@ -134,6 +128,7 @@ namespace VetApi.Controllers
             }
 
             user.Vets.Remove(vet);
+            context.Entry(vet).State = EntityState.Deleted;
             await context.SaveChangesAsync();
 
             return NoContent();

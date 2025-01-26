@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Vet.Models {
     public class VetOwner : IdentityUser {
@@ -10,9 +11,7 @@ namespace Vet.Models {
         public string LastName { get; set; }
         
         public string? Address { get; set; }
-        [Url]
         public string? ProfilePicUrl { get; set; }
-
         public List<Vet> Vets { get; set; } = [];
 
     }

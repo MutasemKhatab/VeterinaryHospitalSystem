@@ -229,7 +229,8 @@ namespace Vet.DataAccess.Migrations
                         name: "FK_Vets_VetOwners_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "VetOwners",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 

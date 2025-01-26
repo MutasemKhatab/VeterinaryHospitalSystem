@@ -11,7 +11,7 @@ using Vet.DataAccess.Data;
 namespace Vet.DataAccess.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20250126062857_Initial")]
+    [Migration("20250126080600_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -317,7 +317,8 @@ namespace Vet.DataAccess.Migrations
                 {
                     b.HasOne("Vet.Models.VetOwner", "Owner")
                         .WithMany("Vets")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Owner");
                 });

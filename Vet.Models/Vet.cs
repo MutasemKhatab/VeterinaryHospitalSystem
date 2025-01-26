@@ -15,8 +15,6 @@ public class Vet
     public DateTime? DateOfBirth { get; set; }
     public string? ProfilePicUrl { get; set; }
     public string? OwnerId { get; set; }
-    [ForeignKey("OwnerId")]
-    [ValidateNever]
     [JsonIgnore]
     public VetOwner? Owner { get; set; }
 }
