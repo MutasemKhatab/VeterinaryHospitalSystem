@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Vet.DataAccess.Data;
+using Vet.DataAccess.Repository.IRepository;
 using Vet.Models;
 
 namespace VetApi.Controllers
@@ -10,14 +10,16 @@ namespace VetApi.Controllers
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class VetController(AuthDbContext context) : ControllerBase
+
+    public class VetController(IUnitOfWork unitOfWork) : ControllerBase
     {
         private async Task<VetOwner?> GetUser()
         {
-            string? id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return await context.VetOwners.Include(
-                owner => owner.Vets
-            ).FirstOrDefaultAsync(vo => vo.Id == id);
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return await unitOfWork.VetOwner.Get(
+                owner => owner.Id.Equals(id),
+                "Vets"
+            );
         }
 
         // GET: /Vet
@@ -35,7 +37,7 @@ namespace VetApi.Controllers
         }
 
         // GET: /Vet/{id}
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Vet.Models.Vet>> GetVet(int id)
         {
             var user = await GetUser();
@@ -60,14 +62,14 @@ namespace VetApi.Controllers
             }
 
             user.Vets.Add(vet);
-            await context.SaveChangesAsync();
+            await unitOfWork.SaveAsync();
 
-            return CreatedAtAction("GetVet", new { id = vet.Id }, vet);
+            return CreatedAtAction(nameof(GetVet), new { id = vet.Id }, vet);
         }
 
 
         // PUT: /Vet/{id}
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> PutVet(int id, Vet.Models.Vet vet)
         {
             var user = await GetUser();
@@ -87,12 +89,10 @@ namespace VetApi.Controllers
             existingVet.ProfilePicUrl = vet.ProfilePicUrl;
             existingVet.Gender = vet.Gender;
             existingVet.DateOfBirth = vet.DateOfBirth;
-
-            context.Entry(existingVet).State = EntityState.Modified;
-
+            unitOfWork.VetOwner.UpdateVet(existingVet);
             try
             {
-                await context.SaveChangesAsync();
+                await unitOfWork.SaveAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -111,10 +111,10 @@ namespace VetApi.Controllers
 
 
         // DELETE: /Vet/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteVet(int id)
         {
-            var user = await GetUser();
+            var user =await GetUser();
 
             if (user == null)
             {
@@ -127,9 +127,8 @@ namespace VetApi.Controllers
                 return NotFound();
             }
 
-            user.Vets.Remove(vet);
-            context.Entry(vet).State = EntityState.Deleted;
-            await context.SaveChangesAsync();
+            unitOfWork.VetOwner.DeleteVet(vet);
+            await unitOfWork.SaveAsync();
 
             return NoContent();
         }

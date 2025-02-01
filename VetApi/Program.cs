@@ -1,15 +1,19 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Vet.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using Vet.DataAccess.Repository;
+using Vet.DataAccess.Repository.IRepository;
 using Vet.Models;
 using VetApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+
+#region Configure Db Contexts
+
 builder.Services.AddDbContext<VeterinaryDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -21,14 +25,21 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
         new MariaDbServerVersion(new Version(8, 0, 21))
     ));
 
+#endregion
+
+#region Configure Identity
+
 builder.Services.AddIdentity<VetOwner, IdentityRole>()
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
+#endregion
+
+#region Configure Authentication
+
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
-
-
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+//TODO try using the [JwtSettings] class
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -50,11 +61,18 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+#endregion
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 var app = builder.Build();
+
+#region Apply Migration
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+
     var context = services.GetRequiredService<VeterinaryDbContext>();
     context.Database.Migrate();
 
@@ -62,10 +80,13 @@ using (var scope = app.Services.CreateScope())
     authContext.Database.Migrate();
 }
 
+#endregion
 app.UseHttpsRedirection();
+
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

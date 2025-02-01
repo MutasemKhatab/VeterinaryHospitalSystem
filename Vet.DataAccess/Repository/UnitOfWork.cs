@@ -1,0 +1,18 @@
+﻿using Vet.DataAccess.Data;
+using Vet.DataAccess.Repository.IRepository;
+
+namespace Vet.DataAccess.Repository;
+
+public class UnitOfWork(AuthDbContext authDbContext, VeterinaryDbContext veterinaryDbContext) : IUnitOfWork
+{
+    public IVetOwnerRepository VetOwner { get; } = new VetOwnerRepository(authDbContext);
+
+
+    public async Task SaveAsync(string whichDb = "auth")
+    {
+        if (whichDb == "auth")
+            await authDbContext.SaveChangesAsync();
+        else
+            await veterinaryDbContext.SaveChangesAsync();
+    }
+}
