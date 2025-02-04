@@ -10,8 +10,8 @@ namespace VetApi.Controllers.Authentication
     [Route("api/auth/[controller]")]
     [ApiController]
     public class LoginController(
-        SignInManager<VetOwner> signInManager,
-        UserManager<VetOwner> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        UserManager<ApplicationUser> userManager,
         IOptions<JwtSettings> jwtSettings)
         : ControllerBase
     {

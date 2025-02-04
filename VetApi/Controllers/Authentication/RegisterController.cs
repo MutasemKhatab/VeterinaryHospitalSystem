@@ -7,21 +7,24 @@ namespace VetApi.Controllers.Authentication
     [Route("api/auth/[controller]")]
     [ApiController]
     public class RegisterController(
-        UserManager<VetOwner> userManager)
+        UserManager<ApplicationUser> userManager)
         : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] RegisterBody model)
+        public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
-            var user = new VetOwner {Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Address = model.Address,
-                ProfilePicUrl = model.ProfilePicUrl,
-                UserName = model.Email};
+            ApplicationUser user;
+            try
+            {
+                user = MapUser(model);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+
             var result = await userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -29,19 +32,42 @@ namespace VetApi.Controllers.Authentication
 
             return Ok(new { Message = "User registered successfully" });
         }
-    }
-}
 
-public record RegisterBody
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
-    
-    public string FirstName { get; set; }
-    
-    public string LastName { get; set; }
-    
-    public string? Address { get; set; }
-    
-    public string? ProfilePicUrl { get; set; }
+        private static ApplicationUser MapUser(RegisterDto model)
+        {
+            if (model.IsVetOwner)
+                return MapVetOwner(model);
+            return MapVeterinarian(model);
+        }
+
+        private static VetOwner MapVetOwner(RegisterDto model)
+        {
+            return new VetOwner
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Address = model.Address,
+                ProfilePicUrl = model.ProfilePicUrl
+            };
+        }
+
+        private static Veterinarian MapVeterinarian(RegisterDto model)
+        {
+            if (string.IsNullOrEmpty(model.EmployeeId) || string.IsNullOrEmpty(model.Speciality))
+                throw new ArgumentException("EmployeeId and Speciality are required for Veterinarian");
+            return new Veterinarian
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Address = model.Address,
+                ProfilePicUrl = model.ProfilePicUrl,
+                EmployeeId = model.EmployeeId,
+                Speciality = model.Speciality
+            };
+        }
+    }
 }

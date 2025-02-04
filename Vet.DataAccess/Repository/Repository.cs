@@ -5,50 +5,42 @@ using Vet.DataAccess.Repository.IRepository;
 namespace Vet.DataAccess.Repository;
 
 public abstract class Repository<T>(DbContext db) : IRepository<T>
-    where T : class
-{
+    where T : class {
     private readonly DbSet<T> _dbSet = db.Set<T>();
 
-    public void Add(T entity)
-    {
+    public void Add(T entity) {
         _dbSet.Add(entity);
     }
 
-    public async Task<T?> Get(Expression<Func<T, bool>> filter, string? include = null, bool tracked = true)
-    {
-        var query =tracked ? _dbSet : _dbSet.AsNoTracking();
+    public async Task<T?> Get(Expression<Func<T, bool>> filter, string? include = null, bool tracked = true) {
+        var query = tracked ? _dbSet : _dbSet.AsNoTracking();
 
         query = query.Where(filter);
         Include(ref query, include);
         return await query.FirstOrDefaultAsync();
     }
 
-    public  IAsyncEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? include = null)
-    {
+    public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null, string? include = null) {
         IQueryable<T> query = _dbSet;
         if (filter != null)
             query = query.Where(filter);
         Include(ref query, include);
 
-        return  query.AsAsyncEnumerable();
-        
+        return await query.ToListAsync();
     }
 
-    public void Remove(T entity)
-    {
+    public void Remove(T entity) {
         _dbSet.Remove(entity);
     }
 
-    public void RemoveRange(IEnumerable<T> entity)
-    {
+    public void RemoveRange(IEnumerable<T> entity) {
         _dbSet.RemoveRange(entity);
     }
 
-    private static void Include(ref IQueryable<T> query, string? include)
-    {
+    private static void Include(ref IQueryable<T> query, string? include) {
         if (string.IsNullOrEmpty(include)) return;
         query = include.Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Aggregate(query, (current, includeItem) 
+            .Aggregate(query, (current, includeItem)
                 => current.Include(includeItem));
     }
 }

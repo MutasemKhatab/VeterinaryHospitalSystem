@@ -7,25 +7,20 @@ using Vet.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace VetApi.Controllers
-{
+namespace VetApi.Controllers {
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class VetOwnerController(IUnitOfWork unitOfWork) : ControllerBase
-    {
+    public class VetOwnerController(IUnitOfWork unitOfWork) : ControllerBase {
         [HttpGet] // create another one with vets 
-        public IAsyncEnumerable<VetOwner> Get()
-        {
-            return unitOfWork.VetOwner.GetAll();
+        public async Task<IEnumerable<VetOwner>> Get() {
+            return await unitOfWork.VetOwner.GetAll();
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<VetOwner>> Get(int id)
-        {
+        public async Task<ActionResult<VetOwner>> Get(int id) {
             var vetOwner = await unitOfWork.VetOwner.Get(owner => owner.Id.Equals(id));
-            if (vetOwner == null)
-            {
+            if (vetOwner == null) {
                 return NotFound();
             }
 
@@ -34,11 +29,9 @@ namespace VetApi.Controllers
 
 
         [HttpDelete("{id:int}")]
-        public async  Task<IActionResult> Delete(int id)
-        {
-            var vetOwner =await unitOfWork.VetOwner.Get(owner => owner.Id.Equals(id));
-            if (vetOwner == null)
-            {
+        public async Task<IActionResult> Delete(int id) {
+            var vetOwner = await unitOfWork.VetOwner.Get(owner => owner.Id.Equals(id));
+            if (vetOwner == null) {
                 return NotFound();
             }
 

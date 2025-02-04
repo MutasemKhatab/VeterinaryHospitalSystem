@@ -9,7 +9,7 @@ namespace VetApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "VetOwner")]
 
     public class VetController(IUnitOfWork unitOfWork) : ControllerBase
     {

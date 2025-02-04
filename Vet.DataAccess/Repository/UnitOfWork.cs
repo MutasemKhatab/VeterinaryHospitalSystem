@@ -6,6 +6,7 @@ namespace Vet.DataAccess.Repository;
 public class UnitOfWork(AuthDbContext authDbContext, VeterinaryDbContext veterinaryDbContext) : IUnitOfWork
 {
     public IVetOwnerRepository VetOwner { get; } = new VetOwnerRepository(authDbContext);
+    public IVeterinarianRepository Veterinarian { get; } = new VeterinarianRepository(authDbContext);
 
 
     public async Task SaveAsync(string whichDb = "auth")

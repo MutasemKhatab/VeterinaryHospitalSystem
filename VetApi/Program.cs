@@ -10,6 +10,7 @@ using Vet.Models;
 using VetApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors();
 builder.Services.AddControllers();
 
 #region Configure Db Contexts
@@ -29,7 +30,7 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 
 #region Configure Identity
 
-builder.Services.AddIdentity<VetOwner, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
@@ -40,15 +41,12 @@ builder.Services.AddIdentity<VetOwner, IdentityRole>()
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 //TODO try using the [JwtSettings] class
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
-builder.Services.AddAuthentication(options =>
-    {
+builder.Services.AddAuthentication(options => {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
+    .AddJwtBearer(options => {
+        options.TokenValidationParameters = new TokenValidationParameters {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
@@ -66,11 +64,14 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
+app.UseCors(x => x
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 #region Apply Migration
 
-using (var scope = app.Services.CreateScope())
-{
+using (var scope = app.Services.CreateScope()) {
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<VeterinaryDbContext>();
@@ -81,6 +82,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 #endregion
+
 app.UseHttpsRedirection();
 
 

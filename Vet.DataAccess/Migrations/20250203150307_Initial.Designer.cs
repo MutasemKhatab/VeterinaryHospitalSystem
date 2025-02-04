@@ -11,7 +11,7 @@ using Vet.DataAccess.Data;
 namespace Vet.DataAccess.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20250126080600_Initial")]
+    [Migration("20250203150307_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -150,41 +150,7 @@ namespace Vet.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Vet.Models.Vet", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DateOfBirth")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("varchar(95)");
-
-                    b.Property<string>("ProfilePicUrl")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Species")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Vets", (string)null);
-                });
-
-            modelBuilder.Entity("Vet.Models.VetOwner", b =>
+            modelBuilder.Entity("Vet.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(95)");
@@ -198,6 +164,11 @@ namespace Vet.DataAccess.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("varchar(21)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -259,7 +230,67 @@ namespace Vet.DataAccess.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("VetOwners", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("ApplicationUser");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Vet.Models.Vet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("varchar(95)");
+
+                    b.Property<string>("ProfilePicUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Species")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Vets", (string)null);
+                });
+
+            modelBuilder.Entity("Vet.Models.VetOwner", b =>
+                {
+                    b.HasBaseType("Vet.Models.ApplicationUser");
+
+                    b.HasDiscriminator().HasValue("VetOwner");
+                });
+
+            modelBuilder.Entity("Vet.Models.Veterinarian", b =>
+                {
+                    b.HasBaseType("Vet.Models.ApplicationUser");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Speciality")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasDiscriminator().HasValue("Veterinarian");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -273,7 +304,7 @@ namespace Vet.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Vet.Models.VetOwner", null)
+                    b.HasOne("Vet.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -282,7 +313,7 @@ namespace Vet.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Vet.Models.VetOwner", null)
+                    b.HasOne("Vet.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,7 +328,7 @@ namespace Vet.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Vet.Models.VetOwner", null)
+                    b.HasOne("Vet.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -306,7 +337,7 @@ namespace Vet.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Vet.Models.VetOwner", null)
+                    b.HasOne("Vet.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
