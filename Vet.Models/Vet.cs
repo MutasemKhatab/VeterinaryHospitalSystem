@@ -13,8 +13,11 @@ public class Vet
     public string Gender { get; set; }
     public string Species { get; set; }
     public DateTime? DateOfBirth { get; set; }
-    public string? ProfilePicUrl { get; set; }
+    public string? ProfilePicUrl { get; set; }//TODO change the name to PicUrl
     public string? OwnerId { get; set; }
     [JsonIgnore]
     public VetOwner? Owner { get; set; }
+    
+    // public ICollection<Vaccine> Vaccines { get; set; } = new List<Vaccine>();
+
 }

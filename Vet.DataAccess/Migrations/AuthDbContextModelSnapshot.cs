@@ -208,6 +208,9 @@ namespace Vet.DataAccess.Migrations
                     b.Property<string>("ProfilePicUrl")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("ResetCode")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 

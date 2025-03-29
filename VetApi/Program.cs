@@ -84,7 +84,7 @@ using (var scope = app.Services.CreateScope()) {
 #endregion
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -24,6 +24,11 @@ services:
       - Jwt__Issuer=http://localhost:8082
       - Jwt__Audience=http://localhost:8080
       - AuthService__Url=http://vetauth:8082/api/auth
+      - Smtp__Host=smtp.gmail.com
+      - Smtp__Port=587
+      - Smtp__Username=sgtm3tasem@gmail.com
+      - Smtp__Password=vtdk rtkh mghl ymvt
+      - Smtp__From=sgtm3tasem@gmail.com
     ports:
       - "8080:8080"
       - "8081:8081"

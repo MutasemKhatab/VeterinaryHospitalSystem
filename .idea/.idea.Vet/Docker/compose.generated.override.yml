@@ -11,6 +11,7 @@ services:
     - "dotnet"
     - "/app/bin/Debug/net8.0/VetApi.dll"
     environment:
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net8.0/VetApi.staticwebassets.runtime.CT.json"
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
     image: "vetapi:dev"
     ports: []

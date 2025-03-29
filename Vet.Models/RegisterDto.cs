@@ -11,6 +11,7 @@ public class RegisterDto
     [Required, EmailAddress] public string Email { get; set; }
     public string? Address { get; set; }
     public string? ProfilePicUrl { get; set; }
+    public string? PhoneNumber { get; set; }
     [Required] public string Password { get; set; }
 
     // Expected values: "VetOwner" or "Veterinarian"

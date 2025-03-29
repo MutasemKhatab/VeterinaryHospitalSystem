@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vet.DataAccess", "Vet.DataA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vet.Models", "Vet.Models\Vet.Models.csproj", "{55131171-A63C-4D63-A66F-601F0EB1B784}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vet.Test", "Vet.Test\Vet.Test.csproj", "{F8CA2F93-4D1D-4678-9C5F-B591E3990C42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,5 +31,9 @@ Global
 		{55131171-A63C-4D63-A66F-601F0EB1B784}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55131171-A63C-4D63-A66F-601F0EB1B784}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55131171-A63C-4D63-A66F-601F0EB1B784}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8CA2F93-4D1D-4678-9C5F-B591E3990C42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8CA2F93-4D1D-4678-9C5F-B591E3990C42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8CA2F93-4D1D-4678-9C5F-B591E3990C42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8CA2F93-4D1D-4678-9C5F-B591E3990C42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
