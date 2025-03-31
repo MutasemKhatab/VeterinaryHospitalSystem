@@ -5,16 +5,12 @@ using System.Security.Claims;
 using Vet.DataAccess.Repository.IRepository;
 using Vet.Models;
 
-namespace VetApi.Controllers
-{
+namespace VetApi.Controllers {
     [Route("[controller]")]
     [ApiController]
-    [Authorize(Roles = "VetOwner")]
-
-    public class VetController(IUnitOfWork unitOfWork) : ControllerBase
-    {
-        private async Task<VetOwner?> GetUser()
-        {
+    [Authorize(Roles = nameof(VetOwner))]
+    public class VetController(IUnitOfWork unitOfWork) : ControllerBase {
+        private async Task<VetOwner?> GetUser() {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return await unitOfWork.VetOwner.Get(
                 owner => owner.Id.Equals(id),
@@ -24,12 +20,10 @@ namespace VetApi.Controllers
 
         // GET: /Vet
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Vet.Models.Vet>>> GetVets()
-        {
+        public async Task<ActionResult<IEnumerable<Vet.Models.Vet>>> GetVets() {
             var user = await GetUser();
 
-            if (user == null)
-            {
+            if (user == null) {
                 return NotFound();
             }
 
@@ -38,8 +32,7 @@ namespace VetApi.Controllers
 
         // GET: /Vet/{id}
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<Vet.Models.Vet>> GetVet(int id)
-        {
+        public async Task<ActionResult<Vet.Models.Vet>> GetVet(int id) {
             var user = await GetUser();
             if (user == null)
                 return NotFound();
@@ -53,34 +46,29 @@ namespace VetApi.Controllers
 
         // POST: /Vet
         [HttpPost]
-        public async Task<ActionResult<Vet.Models.Vet>> PostVet(Vet.Models.Vet vet)
-        {
+        public async Task<ActionResult<Vet.Models.Vet>> PostVet(Vet.Models.Vet vet) {
             var user = await GetUser();
-            if (user == null)
-            {
+            if (user == null) {
                 return NotFound();
             }
 
+            await unitOfWork.Vet.AddAsync(vet);
             user.Vets.Add(vet);
             await unitOfWork.SaveAsync();
 
             return CreatedAtAction(nameof(GetVet), new { id = vet.Id }, vet);
         }
 
-
-        // PUT: /Vet/{id}
+        // PUT: /Vet/{id:int}
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> PutVet(int id, Vet.Models.Vet vet)
-        {
+        public async Task<IActionResult> PutVet(int id, Vet.Models.Vet vet) {
             var user = await GetUser();
-            if (user == null || id != vet.Id || vet.OwnerId != user.Id)
-            {
+            if (user == null || id != vet.Id || vet.OwnerId != user.Id) {
                 return BadRequest();
             }
 
             var existingVet = user.Vets.FirstOrDefault(v => v.Id == id);
-            if (existingVet == null)
-            {
+            if (existingVet == null) {
                 return NotFound();
             }
 
@@ -89,45 +77,35 @@ namespace VetApi.Controllers
             existingVet.ProfilePicUrl = vet.ProfilePicUrl;
             existingVet.Gender = vet.Gender;
             existingVet.DateOfBirth = vet.DateOfBirth;
-            unitOfWork.VetOwner.UpdateVet(existingVet);
-            try
-            {
+            
+            unitOfWork.Vet.Update(existingVet);
+            try {
                 await unitOfWork.SaveAsync();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (user.Vets.All(e => e.Id != id))
-                {
+            catch (DbUpdateConcurrencyException) {
+                if (user.Vets.All(e => e.Id != id)) {
                     return NotFound();
-                }
-                else
-                {
-                    throw;
                 }
             }
 
             return NoContent();
         }
 
-
-        // DELETE: /Vet/{id}
+        // DELETE: /Vet/{id:int}
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteVet(int id)
-        {
-            var user =await GetUser();
+        public async Task<IActionResult> DeleteVet(int id) {
+            var user = await GetUser();
 
-            if (user == null)
-            {
+            if (user == null) {
                 return NotFound();
             }
 
             var vet = user.Vets.FirstOrDefault(v => v.Id == id);
-            if (vet == null)
-            {
+            if (vet == null) {
                 return NotFound();
             }
 
-            unitOfWork.VetOwner.DeleteVet(vet);
+            unitOfWork.Vet.Remove(vet);
             await unitOfWork.SaveAsync();
 
             return NoContent();

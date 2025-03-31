@@ -237,6 +237,34 @@ namespace Vet.DataAccess.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("Vet.Models.Vaccine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Doses")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("VetId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VetId");
+
+                    b.ToTable("Vaccines", (string)null);
+                });
+
             modelBuilder.Entity("Vet.Models.Vet", b =>
                 {
                     b.Property<int>("Id")
@@ -344,6 +372,17 @@ namespace Vet.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Vet.Models.Vaccine", b =>
+                {
+                    b.HasOne("Vet.Models.Vet", "Vet")
+                        .WithMany("Vaccines")
+                        .HasForeignKey("VetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vet");
+                });
+
             modelBuilder.Entity("Vet.Models.Vet", b =>
                 {
                     b.HasOne("Vet.Models.VetOwner", "Owner")
@@ -352,6 +391,11 @@ namespace Vet.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Vet.Models.Vet", b =>
+                {
+                    b.Navigation("Vaccines");
                 });
 
             modelBuilder.Entity("Vet.Models.VetOwner", b =>

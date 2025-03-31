@@ -8,8 +8,8 @@ public abstract class Repository<T>(DbContext db) : IRepository<T>
     where T : class {
     private readonly DbSet<T> _dbSet = db.Set<T>();
 
-    public void Add(T entity) {
-        _dbSet.Add(entity);
+    public async Task AddAsync(T entity) {
+        await _dbSet.AddAsync(entity);
     }
 
     public async Task<T?> Get(Expression<Func<T, bool>> filter, string? include = null, bool tracked = true) {

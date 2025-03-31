@@ -18,6 +18,6 @@ public class Vet
     [JsonIgnore]
     public VetOwner? Owner { get; set; }
     
-    // public ICollection<Vaccine> Vaccines { get; set; } = new List<Vaccine>();
+    public ICollection<Vaccine> Vaccines { get; set; } = new List<Vaccine>();
 
 }
