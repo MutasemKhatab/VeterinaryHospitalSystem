@@ -7,6 +7,7 @@ public interface IUnitOfWork
     IVeterinarianRepository Veterinarian { get; }
     IVetRepository Vet { get; }
     IVaccineRepository Vaccine { get; }
+    IServiceRequestRepository ServiceRequest { get; }
     
     Task SaveAsync(string whichDb="auth");
 }
