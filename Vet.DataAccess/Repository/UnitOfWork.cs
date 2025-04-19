@@ -10,6 +10,7 @@ public class UnitOfWork(AuthDbContext authDbContext, VeterinaryDbContext veterin
     public IVetRepository Vet { get; } = new VetRepository(authDbContext);
     public IVaccineRepository Vaccine { get; } = new VaccineRepository(authDbContext);
     public IServiceRequestRepository ServiceRequest { get; } = new ServiceRequestRepository(authDbContext);
+    public IPostRepository Post { get; } = new PostRepository(authDbContext);
 
     public async Task SaveAsync(string whichDb = "auth")
     {

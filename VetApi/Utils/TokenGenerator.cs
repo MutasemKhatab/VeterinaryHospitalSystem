@@ -23,7 +23,7 @@ namespace VetApi.Utils {
                 issuer: jwtSettings.Value.Issuer,
                 audience: jwtSettings.Value.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddHours(2),
+                expires: DateTime.Now.AddHours(900),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

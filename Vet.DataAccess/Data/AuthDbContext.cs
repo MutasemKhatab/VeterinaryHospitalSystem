@@ -10,6 +10,7 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options) : IdentityDb
     public DbSet<Models.Vet> Vets { get; set; }
     public DbSet<Vaccine> Vaccines { get; set; }
     public DbSet<ServiceRequest> ServiceRequests { get; set; }
+    public DbSet<Post> Posts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
@@ -33,9 +34,16 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options) : IdentityDb
             .HasForeignKey(e => e.VetOwnerId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
+        // Veterinarian(one) -> Post(many)
+        modelBuilder.Entity<Veterinarian>()
+            .HasMany<Post>()
+            .WithOne(e => e.Veterinarian)
+            .HasForeignKey(e => e.VeterinarianId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Models.Vet>(entity => { entity.ToTable("Vets"); });
         modelBuilder.Entity<Vaccine>(entity => { entity.ToTable("Vaccines"); });
         modelBuilder.Entity<ServiceRequest>(entity => { entity.ToTable("ServiceRequests"); });
+        modelBuilder.Entity<Post>(entity => { entity.ToTable("Posts"); });
     }
 }
