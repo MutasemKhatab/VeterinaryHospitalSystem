@@ -11,6 +11,7 @@ public class UnitOfWork(AuthDbContext authDbContext, VeterinaryDbContext veterin
     public IVaccineRepository Vaccine { get; } = new VaccineRepository(authDbContext);
     public IServiceRequestRepository ServiceRequest { get; } = new ServiceRequestRepository(authDbContext);
     public IPostRepository Post { get; } = new PostRepository(authDbContext);
+    public ICaseStudyRepository CaseStudy {get;} =new CaseStudyRepository(authDbContext);
 
     public async Task SaveAsync(string whichDb = "auth")
     {

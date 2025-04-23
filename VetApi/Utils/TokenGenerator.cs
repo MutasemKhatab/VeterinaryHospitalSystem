@@ -7,6 +7,7 @@ using Vet.Models;
 
 namespace VetApi.Utils {
     public class TokenGenerator(IOptions<JwtSettings> jwtSettings) {
+        //TODO enhance this TokenGenerator
         public string GenerateToken(ApplicationUser user) {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Value.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

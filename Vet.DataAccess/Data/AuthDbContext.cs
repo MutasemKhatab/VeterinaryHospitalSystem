@@ -11,6 +11,7 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options) : IdentityDb
     public DbSet<Vaccine> Vaccines { get; set; }
     public DbSet<ServiceRequest> ServiceRequests { get; set; }
     public DbSet<Post> Posts { get; set; }
+    public DbSet<CaseStudy> CaseStudies { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
@@ -41,9 +42,31 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options) : IdentityDb
             .HasForeignKey(e => e.VeterinarianId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // CaseStudy -> Veterinarian (one-way)
+        modelBuilder.Entity<CaseStudy>()
+            .HasOne(e => e.Veterinarian)
+            .WithMany()
+            .HasForeignKey(e => e.VeterinarianId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // CaseStudy -> VetOwner (one-way)
+        modelBuilder.Entity<CaseStudy>()
+            .HasOne(e => e.VetOwner)
+            .WithMany()
+            .HasForeignKey(e => e.VetOwnerId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // CaseStudy -> Vet (one-way)
+        modelBuilder.Entity<CaseStudy>()
+            .HasOne(e => e.Vet)
+            .WithMany()
+            .HasForeignKey(e => e.VetId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<Models.Vet>(entity => { entity.ToTable("Vets"); });
         modelBuilder.Entity<Vaccine>(entity => { entity.ToTable("Vaccines"); });
         modelBuilder.Entity<ServiceRequest>(entity => { entity.ToTable("ServiceRequests"); });
         modelBuilder.Entity<Post>(entity => { entity.ToTable("Posts"); });
+        modelBuilder.Entity<CaseStudy>(entity => { entity.ToTable("CaseStudies"); });
     }
 }

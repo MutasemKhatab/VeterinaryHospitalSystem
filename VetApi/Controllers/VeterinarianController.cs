@@ -17,7 +17,7 @@ namespace VetApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Veterinarian>> Get(int id)
+        public async Task<ActionResult<Veterinarian>> Get(string id)
         {
             var veterinarian = await unitOfWork.Veterinarian.Get(vet => vet.Id.Equals(id));
             if (veterinarian == null)

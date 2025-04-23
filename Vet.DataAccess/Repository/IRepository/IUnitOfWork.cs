@@ -9,6 +9,7 @@ public interface IUnitOfWork
     IVaccineRepository Vaccine { get; }
     IServiceRequestRepository ServiceRequest { get; }
     IPostRepository Post { get; }
+    ICaseStudyRepository CaseStudy {get;}
     
     Task SaveAsync(string whichDb="auth");
 }

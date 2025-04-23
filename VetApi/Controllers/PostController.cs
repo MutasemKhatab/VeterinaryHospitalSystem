@@ -51,6 +51,7 @@ namespace VetApi.Controllers {
             if (userId == null) {
                 return Unauthorized("User not found.");
             }
+
             post.VeterinarianId = userId;
             await unitOfWork.Post.AddAsync(post);
             await unitOfWork.SaveAsync();
@@ -60,7 +61,7 @@ namespace VetApi.Controllers {
 
         // PUT: api/Post/5
         [HttpPut("{id:int}")]
-        [Authorize(Roles = "Veterinarian")]
+        [Authorize(Roles = nameof(Veterinarian))]
         public async Task<IActionResult> UpdatePost(int id, Post post) {
             if (id != post.Id) {
                 return BadRequest();
@@ -100,7 +101,7 @@ namespace VetApi.Controllers {
 
         // DELETE: api/Post/5
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = "Veterinarian")]
+        [Authorize(Roles = nameof(Veterinarian))]
         public async Task<IActionResult> DeletePost(int id) {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var post = await unitOfWork.Post.Get(p => p.Id == id);

@@ -10,7 +10,15 @@ using Vet.Models;
 using VetApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddCors();
+
+builder.Services.AddCors(options => {
+    options.AddDefaultPolicy(policy => {
+        policy.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 
 #region Configure Db Contexts
