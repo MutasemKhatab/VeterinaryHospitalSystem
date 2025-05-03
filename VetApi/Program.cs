@@ -86,7 +86,13 @@ using (var scope = app.Services.CreateScope()) {
     context.Database.Migrate();
 
     var authContext = services.GetRequiredService<AuthDbContext>();
-    authContext.Database.Migrate();
+    try {
+        authContext.Database.Migrate();
+    }
+    catch (Exception ex) {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
 }
 
 #endregion
