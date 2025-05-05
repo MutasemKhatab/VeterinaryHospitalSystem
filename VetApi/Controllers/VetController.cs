@@ -6,9 +6,9 @@ using Vet.DataAccess.Repository.IRepository;
 using Vet.Models;
 
 namespace VetApi.Controllers {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = nameof(VetOwner))]
+    [Authorize(Roles = $"{nameof(VetOwner)},{nameof(Veterinarian)}")]
     public class VetController(IUnitOfWork unitOfWork) : ControllerBase {
         private async Task<VetOwner?> GetUser() {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -44,6 +44,21 @@ namespace VetApi.Controllers {
             return vet;
         }
 
+        // GET: /VetOwner/{id}
+        [HttpGet("owner/{id}")]
+        public async Task<ActionResult<IEnumerable<Vet.Models.Vet>>> GetVetsByOwnerId(string id) {
+            var user = await unitOfWork.VetOwner.Get(
+                owner => owner.Id.Equals(id),
+                "Vets"
+            );
+
+            if (user == null) {
+                return NotFound();
+            }
+
+            return user.Vets;
+        }
+
         // POST: /Vet
         [HttpPost]
         public async Task<ActionResult<Vet.Models.Vet>> PostVet(Vet.Models.Vet vet) {
@@ -77,7 +92,7 @@ namespace VetApi.Controllers {
             existingVet.ProfilePicUrl = vet.ProfilePicUrl;
             existingVet.Gender = vet.Gender;
             existingVet.DateOfBirth = vet.DateOfBirth;
-            
+
             unitOfWork.Vet.Update(existingVet);
             try {
                 await unitOfWork.SaveAsync();

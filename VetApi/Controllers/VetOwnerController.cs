@@ -1,15 +1,13 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Vet.DataAccess.Data;
 using Vet.DataAccess.Repository.IRepository;
 using Vet.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace VetApi.Controllers {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class VetOwnerController(IUnitOfWork unitOfWork) : ControllerBase {
@@ -33,14 +31,26 @@ namespace VetApi.Controllers {
             return VetOwnerDto.FromVetOwner(vetOwner);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<VetOwner>> Get(int id) {
+        [HttpGet("{id}")]
+        public async Task<ActionResult<VetOwner>> Get(string id) {
             var vetOwner = await unitOfWork.VetOwner.Get(owner => owner.Id.Equals(id));
             if (vetOwner == null) {
                 return NotFound();
             }
 
             return vetOwner;
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<VetOwner>>> SearchByPhone([FromQuery] string phone) {
+            if (string.IsNullOrEmpty(phone)) {
+                return BadRequest("Phone number is required for search");
+            }
+
+            var vetOwners = await unitOfWork.VetOwner.GetAll(owner => owner.PhoneNumber != null && owner.PhoneNumber.Contains(phone)
+            );
+
+            return Ok(vetOwners.Take(5));
         }
 
         [HttpPut("update")]
@@ -67,8 +77,8 @@ namespace VetApi.Controllers {
             return Ok("Profile updated successfully.");
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id) {
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id) {
             var vetOwner = await unitOfWork.VetOwner.Get(owner => owner.Id.Equals(id));
             if (vetOwner == null) {
                 return NotFound();

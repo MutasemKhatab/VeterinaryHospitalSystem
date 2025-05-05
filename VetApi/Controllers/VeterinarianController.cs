@@ -29,7 +29,7 @@ namespace VetApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             var veterinarian = await unitOfWork.Veterinarian.Get(vet => vet.Id.Equals(id));
             if (veterinarian == null)

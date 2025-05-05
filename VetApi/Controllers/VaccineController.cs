@@ -5,7 +5,7 @@ using Vet.Models;
 
 namespace VetApi.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize]
 public class VaccineController(IUnitOfWork unitOfWork) : ControllerBase {

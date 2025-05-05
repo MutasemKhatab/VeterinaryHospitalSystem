@@ -7,7 +7,7 @@ using Vet.Models.DTOs;
 namespace VetApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 [Authorize]
 public class ServiceRequestController(IUnitOfWork unitOfWork) : ControllerBase {
     [HttpGet]

@@ -16,7 +16,7 @@ services:
     - "--mode=server"
     - "--frontend-port=57000"
     - "--backend-port=57200"
-    - "--roslyn-worker-port=57401"
+    - "--roslyn-worker-port=57402"
     - "--timeout=60"
     environment:
       ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net8.0/VetApi.staticwebassets.runtime.CT.json"
@@ -25,14 +25,14 @@ services:
       RESHARPER_LOG_CONF: "/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
     image: "vetapi:dev"
     ports:
-    - "127.0.0.1:57001:57000"
-    - "127.0.0.1:57201:57200"
-    - "127.0.0.1:57401:57401"
+    - "127.0.0.1:57002:57000"
+    - "127.0.0.1:57202:57200"
+    - "127.0.0.1:57402:57402"
     volumes:
     - "/home/m3tasem/Programming/Vet/VetApi:/app:rw"
     - "/home/m3tasem/Programming/Vet:/src:rw"
     - "/home/m3tasem/.nuget/packages:/home/app/.nuget/packages"
     - "/home/m3tasem/.local/share/JetBrains/RiderRemoteDebugger/2025.1.1/Linux64:/opt/JetBrains/RiderDebuggerTools"
     - "/snap/rider/572/bin/backend-log.xml:/etc/opt/JetBrains/RiderDebuggerTools/backend-log.xml"
-    - "/home/m3tasem/.cache/JetBrains/Rider2025.1/log/DebuggerWorker/JetBrains.Debugger.Worker.2025_5_03_23_22_07:/var/opt/JetBrains/RiderDebuggerTools:rw"
+    - "/home/m3tasem/.cache/JetBrains/Rider2025.1/log/DebuggerWorker/JetBrains.Debugger.Worker.2025_5_05_16_57_25:/var/opt/JetBrains/RiderDebuggerTools:rw"
     working_dir: "/app"

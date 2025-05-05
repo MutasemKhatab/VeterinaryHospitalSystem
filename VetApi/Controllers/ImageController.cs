@@ -36,7 +36,7 @@ namespace VetApi.Controllers {
                 return BadRequest("Invalid file type. Only .jpg, .jpeg, .png, and .gif are allowed.");
             }
 
-            if (string.IsNullOrEmpty(imageType) || (imageType != "vet" && imageType != "pfp")) {
+            if (string.IsNullOrEmpty(imageType) || (imageType != "vet" && imageType != "pfp"&& imageType != "post")) {
                 _logger.LogWarning("Invalid image type.");
                 return BadRequest("Invalid image type. Only 'vet' and 'pfp' are allowed.");
             }

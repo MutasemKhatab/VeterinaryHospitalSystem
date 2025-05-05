@@ -8,7 +8,7 @@ using Vet.Models;
 
 namespace VetApi.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = nameof(Veterinarian))]
 public class CaseStudyController(IUnitOfWork unitOfWork) : Controller {

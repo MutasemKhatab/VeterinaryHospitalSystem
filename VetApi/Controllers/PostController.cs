@@ -7,7 +7,7 @@ using Vet.DataAccess.Repository.IRepository;
 using Vet.Models;
 
 namespace VetApi.Controllers {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class PostController(IUnitOfWork unitOfWork) : ControllerBase {
         // GET: api/Post
