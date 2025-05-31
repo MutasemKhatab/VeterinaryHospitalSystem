@@ -27,7 +27,7 @@ services:
       - Smtp__Host=smtp.gmail.com
       - Smtp__Port=587
       - Smtp__Username=sgtm3tasem@gmail.com
-      - Smtp__Password=vtdk rtkh mghl ymvt
+      - Smtp__Password=cout<<mypasswordisnotforsharing
       - Smtp__From=sgtm3tasem@gmail.com
     ports:
       - "8080:8080"

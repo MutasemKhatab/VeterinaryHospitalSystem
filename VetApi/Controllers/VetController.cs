@@ -101,6 +101,8 @@ namespace VetApi.Controllers {
                 if (user.Vets.All(e => e.Id != id)) {
                     return NotFound();
                 }
+
+                throw;
             }
 
             return NoContent();

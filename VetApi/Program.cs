@@ -1,109 +1,113 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Vet.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Vet.DataAccess.Data;
 using Vet.DataAccess.Repository;
 using Vet.DataAccess.Repository.IRepository;
 using Vet.Models;
 using VetApi.Utils;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace VetApi;
 
-builder.Services.AddCors(options => {
-    options.AddDefaultPolicy(policy => {
-        policy.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
+public class Program {
+    public static void Main(string[] args) {
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+        builder.Services.AddCors(options => {
+            options.AddDefaultPolicy(policy => {
+                policy.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
 
-#region Configure Db Contexts
+        builder.Services.AddControllers();
 
-builder.Services.AddDbContext<VeterinaryDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MariaDbServerVersion(new Version(8, 0, 21))
-    ));
+        #region Configure Db Contexts
+
+// Simple Database
+/*
 builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MariaDbServerVersion(new Version(8, 0, 21))
-    ));
+    options.UseSqlite("Data Source=../Vet.db;Cache=Shared"));
+    */
 
-#endregion
+// MySQL Database
+        builder.Services.AddDbContext<AuthDbContext>(options =>
+            options.UseMySql(
+                builder.Configuration.GetConnectionString("DefaultConnection"),
+                new MariaDbServerVersion(new Version(8, 0, 21))
+            ));
 
-#region Configure Identity
+        #endregion
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<AuthDbContext>()
-    .AddDefaultTokenProviders();
+        #region Configure Identity
 
-#endregion
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<AuthDbContext>()
+            .AddDefaultTokenProviders();
 
-#region Configure Authentication
+        #endregion
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
-//TODO try using the [JwtSettings] class
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
-builder.Services.AddAuthentication(options => {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options => {
-        options.TokenValidationParameters = new TokenValidationParameters {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
-        };
-    });
+        #region Configure Authentication
 
-builder.Services.AddAuthorization();
+        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+        var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
+        builder.Services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+            });
 
-#endregion
+        builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        #endregion
 
-var app = builder.Build();
-app.UseCors(x => x
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-#region Apply Migration
+        var app = builder.Build();
+        app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
-using (var scope = app.Services.CreateScope()) {
-    var services = scope.ServiceProvider;
+        #region Apply Migration
 
-    var context = services.GetRequiredService<VeterinaryDbContext>();
-    context.Database.Migrate();
+        using (var scope = app.Services.CreateScope()) {
+            var services = scope.ServiceProvider;
 
-    var authContext = services.GetRequiredService<AuthDbContext>();
-    try {
-        authContext.Database.Migrate();
-    }
-    catch (Exception ex) {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating the database.");
+            var authContext = services.GetRequiredService<AuthDbContext>();
+            try {
+                authContext.Database.Migrate();
+            }
+            catch (Exception ex) {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred while migrating the database.");
+            }
+        }
+
+        #endregion
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+
+        app.MapControllers();
+
+        app.Run();
     }
 }
-
-#endregion
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-
-app.MapControllers();
-
-app.Run();

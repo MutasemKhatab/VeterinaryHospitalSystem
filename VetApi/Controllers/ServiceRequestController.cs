@@ -8,7 +8,7 @@ namespace VetApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+/*[Authorize]*/
 public class ServiceRequestController(IUnitOfWork unitOfWork) : ControllerBase {
     [HttpGet]
     public async Task<IActionResult> GetAll() {
